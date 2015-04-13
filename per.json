@@ -1,0 +1,98 @@
+{
+	"name": "Small",
+
+	"children": [
+		{
+			"name" : "Kilimanjaro Christian Medical CRS",
+			"points" : 0.97
+		},
+		{
+			"name" : "Soweto IMPAACT CRS",
+			"points" : 3.66
+		},
+		{
+			"name" : "Umlazi CRS",
+			"points" : 6.64
+		},
+		{
+			"name" : "Byramjee Jeejeebhoy Government Medical College CRS",
+			"points" : 1.73
+		},
+		{
+			"name" : "Durban Paediatric HIV CRS",
+			"points" : 0.88
+		},
+		{
+			"name" : "MU-JHU Research Collaboration CRS",
+			"points" : 7.58
+		},
+		{
+			"name" : "Shandukani CRS",
+			"points" : 1.24
+		},
+		{
+			"name" : "Blantyre CRS",
+			"points" : 9.02
+		},
+		{
+			"name" : "St Mary",
+			"points" : 3.46
+		},
+		{
+			"name" : "Seke North CRS",
+			"points" : 4.03
+		},
+		{
+			"name" : "Parirenyatwa CRS",
+			"points" : 2.17
+		},
+		{
+			"name" : "Malawi CRS",
+			"points" : 8.49
+		},
+		{
+			"name" : "George CRS",
+			"points" : 1.24
+		},
+		{
+			"name" : "FAM-CRU CRS",
+			"points" : 1.47
+		},
+		{
+			"name" : "Soweto IMPAACT CRS",
+			"points" : 17.00
+		},
+		{
+			"name" : "Byramjee Jeejeebhoy Government Medical College CRS",
+			"points" : 0.70
+		},
+		{
+			"name" : "Durban Paediatric HIV CRS",
+			"points" : 3.90
+		},
+		{
+			"name" : "FAM-CRU CRS",
+			"points" : 5.50
+		},
+		{
+			"name" : "Barranco CRS",
+			"points" : 0.20
+		},
+		{
+			"name" : "San Miguel CRS",
+			"points" : 0.50
+		},
+		{
+			"name" : "NY Univ. HIV/AIDS CRS",
+			"points" : 0.00
+		},
+		{
+			"name" : "BMC ACTG CRS",
+			"points" : 0.05
+		},
+		{
+			"name" : "Hospital Nossa Senhora da Conceicao CRS",
+			"points" : 3.70
+		}
+	]
+}

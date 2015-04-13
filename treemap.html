@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="http://fonts.googleapis.com/css?family=Raleway:100,300" rel="stylesheet" type="text/css">
+
+<head>
+	<style>
+		body {
+			font-family: 'Raleway', sans-serif;
+			font-weight: 100;
+			overflow-x: hidden;
+		}
+
+		form {
+			position: absolute;
+			right: 10px;
+		}
+
+		text.nameLabel {
+			text-anchor: middle;
+			font-size: 12px;
+			fill: white;
+			pointer-events: none;
+		}
+
+		text.pointsLabel {
+			text-anchor: middle;
+			font-size: 24px;
+			fill: white;
+			pointer-events: none;
+		}
+
+		div.title {
+			font-size: 24pt;
+			color: #656;
+		}
+
+		div.tooltip {
+			position: absolute;
+			text-align: center;
+			padding: 8px;
+			font-size: 12px;
+			background: white;
+			border: solid 1px #aaa;
+			border-radius: 8px;
+			opacity: .9;
+			z-index: 10;
+			pointer-events: none;
+		}
+
+		svg *::selection {
+		    background : transparent;
+		}
+
+		svg *::-moz-selection {
+		    background:transparent;
+		}
+
+		svg *::-webkit-selection {
+		    background:transparent;
+		}
+	</style>
+
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+
+	<script>
+
+		//Constants
+		var margin = {top: 40, right: 20, bottom: 10, left: 10},
+			width = window.innerWidth - margin.left - margin.right,
+			height = 300,
+			highlight = 1.02,
+			strLimit = 20;
+
+		var treemap = d3.layout.treemap()
+			.size([width, height])
+			.sticky(false)
+			.value(function (d) { return d.points; });
+
+		var textHeight = d3.map();
+		var textWidth = d3.map();
+
+		var numDisplays = 0;
+
+		function displayDataAsTreemap(filename) {
+
+			var division = d3.select("body").append("div");
+			
+			d3.json(filename, function(error, root) {
+
+				var title = division.append("div")
+					.attr("class", "title")
+					.text(root.name.toUpperCase());
+
+				var canvas = division.append("svg")
+					.attr("width", width)
+					.attr("height", height)
+					.attr("fill", "none");
+
+				var controls = division.append("form");
+
+				var tooltip = division.append("div")
+					.attr("class", "tooltip")
+					.style("visibility", "hidden");
+					
+				var cells = canvas.datum(root)
+					.selectAll("cell")
+					.data(treemap.nodes)
+					.enter()
+					.append("g");
+						
+				////////////
+				//CONTROLS//
+				////////////
+				var isCount = false;
+				
+				controls.append("label")
+					.text(" Size ")
+					.append("input")
+					.attr("type", "radio")
+					.attr("name", "mode")
+					.attr("value", "size")
+					.attr("checked", "checked");
+					
+				controls.append("label")
+					.text(" Count ")
+					.append("input")
+					.attr("type", "radio")
+					.attr("name", "mode")
+					.attr("value", "count");
+					
+				controls.selectAll("input").on("change", function () {
+					isCount = this.value === "count"
+						
+					var value = isCount
+						  ? function() { return 1; }
+						: function(d) { return d.points; };
+						
+					cells.selectAll("rect")
+						.attr("pointer-events", "none");
+					
+					cells.data(treemap.value(value).nodes)
+						.transition()
+						.duration(800)
+						.call(position);
+					
+					cells.selectAll("rect")
+						.transition()
+						.delay(817)
+						.duration(0)
+						.attr("pointer-events", "all");
+				});
+
+					
+				/////////
+				//CELLS//
+				/////////
+				
+				//Calculate max value to normalize hues
+				var max = d3.max(cells.data(), function (d) { return d.children ? null : d.value; });
+				
+				//Create rects and listeners for mouse events (tooltips, highlighting)
+				cells.append("rect")
+					.attr("fill", function (d) { return d.children ? null : "rgb(64,49,82)"; })
+					.attr("stroke", "#fff")
+					
+					.on("mouseover", function (d) { 
+						d3.select(this).attr("fill-opacity", 1);
+						
+						tooltip.text(d.name)
+						.style("visibility", "visible")
+						.style("width", textWidth);
+					})
+						
+					.on("mousemove", function () {
+						tooltip.style("left", (d3.event.pageX + 12) + "px")
+						.style("top", (d3.event.pageY + 6) + "px");
+					})
+					
+					.on("mouseout", function () {
+						d3.select(this).transition()
+						.duration(100)
+						.attr("fill-opacity", function (d) { return isCount ? 0.9 : Math.pow(d.value / max, .2) / highlight; });
+						
+						tooltip.style("visibility", "hidden")
+							.style("top", 0).style("left", 0);
+					});
+				
+				//create truncated name labels
+				cells.append("text")
+					.text(function (d) { return d.children
+							? null
+							: d.name.length >= strLimit
+								? d.name.substring(0, strLimit) + "..."
+								: d.name; })
+					.attr("class", "nameLabel");
+					
+				//create points labels
+				cells.append("text")
+					.attr("class", "pointsLabel")
+					.text(function (d) { return d.children ? null : d.value; });
+				
+				//Save 12px text dimensions for reference
+				cells.selectAll(".nameLabel").each(function (d) {
+					var dimensions = this.getBBox();
+					textHeight.set(d.name, dimensions.height);
+					textWidth.set(d.name, dimensions.width);
+				});
+				
+				//position cells
+				cells.call(position);
+				
+				function position() {
+					var k = (window.innerWidth - margin.left - margin.right) / width;
+							canvas.attr("width", k * width);
+					
+					max = d3.max(cells.data(), function (d) { return d.children ? null : d.value; });
+				
+					this.selectAll("rect")
+						.attr("x", function (d) { return k * d.x; })
+						.attr("y", function (d) { return d.y; })
+						.attr("width", function (d) { return k * d.dx; })
+						.attr("height", function (d) { return d.dy; })
+						.attr("fill-opacity", function (d) { return isCount ? 0.9 : Math.pow(d.value / max, .2) / highlight; });
+						
+					this.selectAll(".nameLabel")
+						.style("font-size", function (d) {
+							return isCount
+							? 7 * Math.min(k * d.dx / textWidth.get(d.name), d.dy / textHeight.get(d.name), 3)
+							: 12;
+						})
+						.attr("y", function (d) { return isCount ? d.y + d.dy / 2 + 5 : d.y + d.dy / 2 + 15; });
+					
+					this.selectAll(".pointsLabel")
+						.attr("y", function (d) { return d.y + d.dy / 2 - 3; })
+						.attr("opacity", function (d) { return isCount ? -5 : 1; });
+					
+					this.selectAll("text")
+						.attr("x", function (d) { return k * (d.x + d.dx / 2); })
+						.attr("fill-opacity", function (d) { return !isCount
+											&& (d.children || k * d.dx < this.getBBox().width || d.dy < 48)
+											? -1 : 1; });
+				};
+
+				d3.select(window).on("resize."+numDisplays, function () {
+					var k = (window.innerWidth - margin.left - margin.right) / width;
+					
+					canvas.attr("width", k * width);
+					
+					cells.selectAll("rect")
+						//.transition().duration(100)
+						.attr("x", function (d) { return k * d.x; })
+						.attr("width", function (d) { return k * d.dx; });
+
+					cells.selectAll("text")
+						.attr("x", function (d) { return k * (d.x + d.dx / 2); })
+						.attr("fill-opacity", function (d) { return !isCount
+											&& (d.children || k * d.dx < this.getBBox().width || d.dy < 48)
+											? -1 : 1; });
+					
+					cells.selectAll(".nameLabel")
+						//.transition().duration(100)
+						.style("font-size", function (d) {
+							return isCount
+							? 7 * Math.min(k * d.dx / textWidth.get(d.name), d.dy / textHeight.get(d.name), 3)
+							: 12;
+						});
+				});
+
+				numDisplays++;
+			});
+		}
+	</script>
+</head>
+
+<body>
+	This is the treemap display demo... <br><br>
+
+	<script> displayDataAsTreemap("data-medium.json"); </script> <br><br>
+
+<!--
+	<script> displayDataAsTreemap("data-large.json"); </script> <br><br>
+
+	<script> displayDataAsTreemap("data-small.json"); </script> <br> <br>
+
+	blah blah blah
+!-->
+
+</body>

@@ -1,0 +1,7 @@
+{
+	"name": "Small",
+	"children": [
+		{"name": "My Favorite Things", "points": 50},
+		{"name": "All of the best blue paintings", "points": 30}
+	]
+}

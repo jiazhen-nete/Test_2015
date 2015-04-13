@@ -1,0 +1,25 @@
+{
+	"name": "Collections",
+	"children": [
+		{"name": "My Favorite Things", "points": 50},
+		{"name": "All of the best blue paintings", "points": 30},
+		{"name": "Inspirational choices", "points": 30},
+		{"name": "Only The Best Picks", "points": 25},
+		{"name": "Peaceful Portraits", "points": 13},
+		{"name": "Wild Side", "points": 12},
+		{"name": "Take a photo it will last longer", "points": 10},
+		{"name": "Thinking carefully", "points": 5},
+		{"name": "Favorites", "points": 5},
+		{"name": "My Likes", "points": 4},
+		{"name": "Aww Yeah Fun", "points": 1},
+		{"name": "Super Fun Time", "points": 1},
+		{"name": "Collector's Guide", "points": 1},
+		{"name": "Guide To Awesome", "points": 0},
+		{"name": "Taking it in Stride", "points": 0},
+		{"name": "My Finds", "points": 0},
+		{"name": "My Picks", "points": 0},
+		{"name": "My Favorite Picks", "points": 0},
+		{"name": "The next big Thing", "points": 0},
+		{"name": "Boom! Got it.", "points": 0}
+	]
+}
